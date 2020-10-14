@@ -2,28 +2,53 @@
 //
 
 #include <mpi.h>
+#include <sys/time.h>
 #include <iostream>
 #include <stdio.h>
+#define M 100
+double MA[M][M + 1], MAD;
 
-int main(int args, char** argv)
+int main()
 {
-    // Initialize the MPI environment
-    MPI_Init(NULL, NULL);
-    // Get the number of processes
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-    // Get the rank of the process
-    int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-    // Get the name of the processor
-    char processor_name[MPI_MAX_PROCESSOR_NAME];
-    int name_len;
-    MPI_Get_processor_name(processor_name, &name_len);
-    // Print off a hello world message
-    printf("Hello world from processor %s, rank %d out of %d processors\n",
-        processor_name, world_rank, world_size);
-    // Finalize the MPI environment.
-    MPI_Finalize();
+	int i, j, v, k;
+	/* Переменные для замера времени решения */
+	 struct timeval tv1, tv2;
+	 long int dt1;
+	// Генерация данных 
+	 for(i = 0; i < M; i++)
+	 { for(j = 0; j < M; j++)
+	 { if(i == j)
+	 MA[i][j] = 2.0;
+	 else
+	 MA[i][j] = 1.0;
+	 }
+	 MA[i][M] = 1.0(M)+1.0;
+	 }
+	 gettimeofday(&tv1,NULL);
+	/* Прямой ход */
+	for (k = 0; k < M; k++)
+	{
+		MAD = 1.0 / MA[k][k];
+		for (j = M; j >= k; j--)
+			MA[k][j] = MAD;
+		for (i = k + 1; i < M; i++)
+			for (j = M; j >= k; j--)
+				MA[i][j] -= MA[i][k]MA[k][j];
+
+	}
+	/* Обратный ход */
+	 for(k = M-1; k >= 0; k--)
+	 { for(i = k-1; i >= 0; i--)
+	 MA[i][M] -= MA[k][M]MA[i][k];
+	 }
+	/* Засечение времени и печать */
+	 gettimeofday(&tv2,NULL);
+	 dt1 = (tv2.tv_sec - tv1.tv_sec)1000000 + tv2.tv_usec - tv1.tv_usec;
+	 printf("Time = %ld\n",dt1);
+	/* Печать первых восьми корней */
+	printf(" %f %f %f %f\n", MA[0][M], MA[1][M], MA[2][M], MA[3][M]);
+	printf(" %f %f %f %f\n", MA[4][M], MA[5][M], MA[6][M], MA[7][M]);
+	return(0);
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
