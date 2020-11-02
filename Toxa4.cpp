@@ -6,7 +6,7 @@
 using namespace std;
 
 void func() {
-	cout << "Launched by thread" << tid << std::endl;
+	cout << "Launched by thread" << tid << endl;
 }
 int main() {
 	thread func_thread(func);
